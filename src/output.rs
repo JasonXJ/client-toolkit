@@ -263,6 +263,7 @@ fn process_output_event(
         .user_data()
         .get::<Mutex<OutputData>>()
         .expect("SCTK: wl_output has invalid UserData");
+    //println!("output event: {:?}", event);
     let mut udata = udata_mutex.lock().unwrap();
     if let Event::Done = event {
         let (id, has_xdg, pending_events, mut callbacks) = match *udata {
@@ -653,12 +654,16 @@ fn process_xdg_event(
         OutputData::PendingXDG { info, callbacks } => (info, callbacks, true),
         OutputData::Pending { .. } => unreachable!(),
     };
+    //println!("xdg_event (id={}): {:?}", info.id, event);
     match event {
         Event::Name { name } => {
             info.name = name;
         }
         Event::Description { description } => {
             info.description = description;
+        }
+        Event::LogicalPosition { x, y } => {
+            info.location = (x, y);
         }
         Event::Done => {
             notify(wl_out, info, ddata.reborrow(), callbacks);
@@ -683,6 +688,7 @@ impl crate::environment::GlobalHandler<ZxdgOutputManagerV1> for XdgOutputHandler
     ) {
         let version = std::cmp::min(version, 3);
         let mut inner = self.inner.borrow_mut();
+        //println!("binding xdg with version={}", version);
         let xdg_manager: Main<ZxdgOutputManagerV1> = registry.bind(version, id);
         inner.xdg_manager = Some(xdg_manager.into());
     }
