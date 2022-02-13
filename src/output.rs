@@ -88,7 +88,10 @@ pub struct OutputInfo {
     /// space
     ///
     /// Note that the compositor may decide to always report (0,0) if
-    /// it decides clients are not allowed to know this information.
+    /// it decides clients are not allowed to know this information. If your
+    /// environment has an [XdgOutputHandler] global handler for
+    /// [ZxdgOutputManagerV1], this is set to the xdg output's
+    /// "logical_position".
     pub location: (i32, i32),
     /// Physical dimensions of this output, in unspecified units
     pub physical_size: (i32, i32),
